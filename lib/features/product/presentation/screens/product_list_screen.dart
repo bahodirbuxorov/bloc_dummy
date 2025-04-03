@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:iconly/iconly.dart';
+import '../../../../core/di/service_locator.dart';
 import '../blocs/product_bloc.dart';
-import '../../data/datasources/product_remote_data_source.dart';
-import '../../domain/usecases/get_all_products_usecase.dart';
 import '../widgets/product_card.dart';
 import '../widgets/search_sort_bar.dart';
 import '../widgets/shimmer_loader.dart';
@@ -15,10 +14,7 @@ class ProductListScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (_) => ProductBloc(
-        getAllProductsUseCase: GetAllProductsUseCase(ProductRemoteDataSource()),
-        dataSource: ProductRemoteDataSource(),
-      )..add(LoadProductsEvent()),
+      create: (_) => sl<ProductBloc>()..add(LoadProductsEvent()),
       child: Scaffold(
         backgroundColor: Colors.grey.shade50,
         appBar: AppBar(
@@ -27,7 +23,6 @@ class ProductListScreen extends StatelessWidget {
           elevation: 0,
           backgroundColor: Colors.white,
           surfaceTintColor: Colors.white,
-
         ),
         body: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
@@ -37,7 +32,6 @@ class ProductListScreen extends StatelessWidget {
               const SizedBox(height: 12),
               const SearchSortBar(),
               const SizedBox(height: 12),
-
               Expanded(
                 child: BlocBuilder<ProductBloc, ProductState>(
                   builder: (context, state) {
