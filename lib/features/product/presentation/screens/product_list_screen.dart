@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-
+import 'package:iconly/iconly.dart';
 import '../blocs/product_bloc.dart';
 import '../../data/datasources/product_remote_data_source.dart';
 import '../../domain/usecases/get_all_products_usecase.dart';
@@ -17,57 +17,75 @@ class ProductListScreen extends StatelessWidget {
     return BlocProvider(
       create: (_) => ProductBloc(
         getAllProductsUseCase: GetAllProductsUseCase(ProductRemoteDataSource()),
-        dataSource: ProductRemoteDataSource(), // ✅
+        dataSource: ProductRemoteDataSource(),
       )..add(LoadProductsEvent()),
       child: Scaffold(
+        backgroundColor: Colors.grey.shade50,
         appBar: AppBar(
           title: const Text('🛍️ Trending Products'),
           centerTitle: true,
+          elevation: 0,
+          backgroundColor: Colors.white,
+          surfaceTintColor: Colors.white,
+
         ),
-        body: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const SizedBox(height: 8),
-            const CategoryFilterWidget(),
-            const SizedBox(height: 8),
-            const SearchSortBar(),
-            const SizedBox(height: 8),
-            Expanded(
-              child: BlocBuilder<ProductBloc, ProductState>(
-                builder: (context, state) {
-                  if (state is ProductLoading) {
-                    return const ShimmerLoader();
-                  }
+        body: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+          child: Column(
+            children: [
+              const CategoryFilterWidget(),
+              const SizedBox(height: 12),
+              const SearchSortBar(),
+              const SizedBox(height: 12),
 
-                  if (state is ProductLoaded) {
-                    final products = state.products;
-
-                    if (products.isEmpty) {
-                      return const Center(child: Text("No products found in this category."));
+              Expanded(
+                child: BlocBuilder<ProductBloc, ProductState>(
+                  builder: (context, state) {
+                    if (state is ProductLoading) {
+                      return const ShimmerLoader();
                     }
 
-                    return ListView.separated(
-                      padding: const EdgeInsets.all(16),
-                      itemCount: products.length,
-                      separatorBuilder: (_, __) => const SizedBox(height: 16),
-                      itemBuilder: (context, index) {
-                        final product = products[index];
-                        return ProductCard(product: product);
-                      },
-                    );
-                  }
+                    if (state is ProductLoaded) {
+                      final products = state.products;
 
-                  if (state is ProductError) {
-                    return Center(child: Text(state.message));
-                  }
+                      if (products.isEmpty) {
+                        return const Center(
+                          child: Text(
+                            "😕 No products found in this category.",
+                            style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+                          ),
+                        );
+                      }
 
-                  return const SizedBox.shrink();
-                },
+                      return ListView.separated(
+                        physics: const BouncingScrollPhysics(),
+                        padding: const EdgeInsets.only(bottom: 16),
+                        itemCount: products.length,
+                        separatorBuilder: (_, __) => const SizedBox(height: 16),
+                        itemBuilder: (context, index) {
+                          final product = products[index];
+                          return ProductCard(product: product);
+                        },
+                      );
+                    }
+
+                    if (state is ProductError) {
+                      return Center(
+                        child: Text(
+                          "🚫 ${state.message}",
+                          style: const TextStyle(color: Colors.redAccent, fontWeight: FontWeight.w500),
+                          textAlign: TextAlign.center,
+                        ),
+                      );
+                    }
+
+                    return const SizedBox.shrink();
+                  },
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
-
       ),
     );
   }

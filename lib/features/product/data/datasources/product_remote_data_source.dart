@@ -47,6 +47,45 @@ class ProductRemoteDataSource {
       throw Exception('Failed to load category products');
     }
   }
+  Future<ProductModel> addProduct(Map<String, dynamic> data) async {
+    final response = await http.post(
+      Uri.parse('https://dummyjson.com/products/add'),
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode(data),
+    );
+
+    if (response.statusCode == 200) {
+      return ProductModel.fromJson(jsonDecode(response.body));
+    } else {
+      throw Exception('Failed to add product');
+    }
+  }
+
+  Future<ProductModel> updateProduct(int id, Map<String, dynamic> data) async {
+    final response = await http.put(
+      Uri.parse('https://dummyjson.com/products/$id'),
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode(data),
+    );
+
+    if (response.statusCode == 200) {
+      return ProductModel.fromJson(jsonDecode(response.body));
+    } else {
+      throw Exception('Failed to update product');
+    }
+  }
+
+  Future<Map<String, dynamic>> deleteProduct(int id) async {
+    final response = await http.delete(
+      Uri.parse('https://dummyjson.com/products/$id'),
+    );
+
+    if (response.statusCode == 200) {
+      return jsonDecode(response.body);
+    } else {
+      throw Exception('Failed to delete product');
+    }
+  }
 
 
 }

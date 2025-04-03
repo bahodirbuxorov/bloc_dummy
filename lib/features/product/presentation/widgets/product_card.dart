@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:iconly/iconly.dart';
 import '../../domain/entities/product_entity.dart';
 import 'product_image_preview.dart';
 
@@ -10,61 +11,85 @@ class ProductCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
+    return InkWell(
       onTap: () => context.go('/product/${product.id}'),
-      child: Card(
-        elevation: 4,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        child: Padding(
-          padding: const EdgeInsets.all(12),
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // image
-              ClipRRect(
+      borderRadius: BorderRadius.circular(16),
+      child: Container(
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(16),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.03),
+              blurRadius: 8,
+              offset: const Offset(0, 4),
+            ),
+          ],
+        ),
+        margin: const EdgeInsets.symmetric(horizontal: 8),
+        padding: const EdgeInsets.all(12),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // 📷 Image preview
+            GestureDetector(
+              onTap: () => showDialog(
+                context: context,
+                builder: (_) => ProductImagePreview(imageUrl: product.thumbnail),
+              ),
+              child: ClipRRect(
                 borderRadius: BorderRadius.circular(12),
-                child: GestureDetector(
-                  onTap: () => showDialog(
-                    context: context,
-                    builder: (_) => ProductImagePreview(imageUrl: product.thumbnail),
-                  ),
+                child: Hero(
+                  tag: "product-${product.id}",
                   child: Image.network(
                     product.thumbnail,
-                    height: 100,
-                    width: 100,
+                    height: 90,
+                    width: 90,
                     fit: BoxFit.cover,
                     errorBuilder: (_, __, ___) => const Icon(Icons.broken_image),
                   ),
                 ),
               ),
-              const SizedBox(width: 12),
+            ),
+            const SizedBox(width: 14),
 
-              // text content
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      product.title,
-                      style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+            // 📄 Info
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    product.title,
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.w600,
+                      fontSize: 16,
                     ),
-                    const SizedBox(height: 4),
-                    Text(
-                      product.description,
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                      style: Theme.of(context).textTheme.bodySmall,
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      "\$${product.price.toStringAsFixed(2)}",
-                      style: Theme.of(context).textTheme.bodyLarge?.copyWith(color: Colors.green),
-                    ),
-                  ],
-                ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    product.description,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: Theme.of(context).textTheme.bodySmall?.copyWith(color: Colors.grey[700]),
+                  ),
+                  const SizedBox(height: 10),
+                  Row(
+                    children: [
+                      const Icon(IconlyLight.wallet, size: 18, color: Colors.green),
+                      const SizedBox(width: 4),
+                      Text(
+                        "\$${product.price.toStringAsFixed(2)}",
+                        style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                          fontWeight: FontWeight.w600,
+                          color: Colors.green,
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );

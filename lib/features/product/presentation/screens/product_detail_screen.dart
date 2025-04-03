@@ -22,47 +22,59 @@ class ProductDetailScreen extends StatelessWidget {
     return FutureBuilder<ProductModel>(
       future: fetchProduct(),
       builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return Scaffold(
-            appBar: AppBar(title: const Text('Product Detail')),
-            body: const Center(child: CircularProgressIndicator()),
-          );
-        }
+        final isLoading = snapshot.connectionState == ConnectionState.waiting;
 
-        if (snapshot.hasError) {
-          return Scaffold(
-            appBar: AppBar(title: const Text('Product Detail')),
-            body: Center(child: Text('Error: ${snapshot.error}')),
-          );
-        }
-
-        final product = snapshot.data!;
+        final product = snapshot.data ??
+            ProductModel(
+              id: 0,
+              title: '',
+              description: '',
+              price: 0.0,
+              thumbnail: '',
+              rating: 0,
+              category: '',
+              brand: '',
+              images: const [],
+            );
 
         return Scaffold(
           appBar: AppBar(
-            title: Text(product.title, overflow: TextOverflow.ellipsis),
+            title: Text(
+              isLoading ? 'Loading...' : product.title,
+              overflow: TextOverflow.ellipsis,
+            ),
             leading: IconButton(
               icon: const Icon(Icons.arrow_back),
               onPressed: () => context.go("/"),
             ),
           ),
-          bottomNavigationBar: ProductActionBar(product: product),
+          bottomNavigationBar:
+          isLoading ? null : ProductActionBar(product: product),
           body: SingleChildScrollView(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                ProductDetailImage(imageUrl: product.thumbnail),
+                ProductDetailImage(
+                  imageUrl: product.thumbnail,
+                  isLoading: snapshot.connectionState == ConnectionState.waiting,
+                ),
                 const SizedBox(height: 16),
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 16),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      ProductPriceTile(price: product.price),
+                      ProductPriceTile(
+                        price: product.price,
+                        isLoading: isLoading,
+                      ),
                       const SizedBox(height: 16),
-                      ProductInfoCard(product: product),
+                      ProductInfoCard(
+                        product: product,
+                        isLoading: isLoading,
+                      ),
                       const SizedBox(height: 24),
-                      if (product.images.isNotEmpty)
+                      if (!isLoading && product.images.isNotEmpty)
                         ProductGallery(images: product.images),
                       const SizedBox(height: 40),
                     ],
