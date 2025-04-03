@@ -1,7 +1,6 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import '../../../data/datasources/product_remote_data_source.dart';
-import '../../../data/models/product_model.dart';
 
 part 'product_crud_event.dart';
 part 'product_crud_state.dart';
