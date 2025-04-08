@@ -12,12 +12,12 @@ class ProductCrudInitial extends ProductCrudState {}
 class ProductCrudLoading extends ProductCrudState {}
 
 class ProductCrudSuccess extends ProductCrudState {
-  final String message;
+  final ProductModel product;
 
-  const ProductCrudSuccess(this.message);
+  const ProductCrudSuccess(this.product);
 
   @override
-  List<Object?> get props => [message];
+  List<Object?> get props => [product];
 }
 
 class ProductCrudFailure extends ProductCrudState {

@@ -32,7 +32,7 @@ class ProductCard extends StatelessWidget {
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // 📷 Image preview
+
             GestureDetector(
               onTap: () => showDialog(
                 context: context,

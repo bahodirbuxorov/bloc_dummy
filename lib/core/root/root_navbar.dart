@@ -1,8 +1,10 @@
-import 'package:bloc_dummy/features/product/presentation/screens/add_product_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:iconly/iconly.dart';
-import '../../features/product/presentation/screens/product_list_screen.dart';
-
+import 'package:bloc_dummy/features/product/presentation/screens/add_product_screen.dart';
+import 'package:bloc_dummy/features/product/presentation/screens/delete_product_screen.dart';
+import 'package:bloc_dummy/features/product/presentation/screens/product_list_screen.dart';
+import 'package:bloc_dummy/features/product/presentation/screens/update_product_screen.dart';
+import '../../features/product/data/models/product_model.dart';
 
 class MainNavScreen extends StatefulWidget {
   const MainNavScreen({super.key});
@@ -14,16 +16,37 @@ class MainNavScreen extends StatefulWidget {
 class _MainNavScreenState extends State<MainNavScreen> {
   int _selectedIndex = 0;
 
-  final List<Widget> _screens = const [
-    ProductListScreen(),
-    AddProductScreen(),
+  // Sample product to test update/delete pages from navbar
+  final ProductModel dummyProduct = ProductModel(
+    id: 1,
+    title: 'Dummy Product',
+    description: 'Demo for testing',
+    price: 99.99,
+    thumbnail: '',
+    rating: 4.5,
+    category: 'demo',
+    brand: 'DemoBrand',
+    images: [],
+  );
 
-  ];
+  late final List<Widget> _screens;
+
+  @override
+  void initState() {
+    super.initState();
+    _screens = [
+      const ProductListScreen(),
+      const AddProductScreen(),
+      UpdateProductPage(product: dummyProduct),
+      DeleteProductPage(product: dummyProduct),
+    ];
+  }
 
   final List<BottomNavigationBarItem> _navItems = const [
     BottomNavigationBarItem(icon: Icon(IconlyLight.home), label: "Home"),
-    BottomNavigationBarItem(icon: Icon(IconlyLight.plus), label: "Add product"),
-
+    BottomNavigationBarItem(icon: Icon(IconlyLight.plus), label: "Add"),
+    BottomNavigationBarItem(icon: Icon(IconlyLight.edit), label: "Update"),
+    BottomNavigationBarItem(icon: Icon(IconlyLight.delete), label: "Delete"),
   ];
 
   @override

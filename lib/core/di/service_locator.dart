@@ -7,19 +7,20 @@ import '../../features/product/presentation/blocs/crud/product_crud_bloc.dart';
 final sl = GetIt.instance;
 
 void initDependencies() {
-
+  // ✅ Remote Data Source
   sl.registerLazySingleton<ProductRemoteDataSource>(() => ProductRemoteDataSource());
 
-
+  // ✅ UseCase
   sl.registerLazySingleton<GetAllProductsUseCase>(
         () => GetAllProductsUseCase(sl()),
   );
 
-
+  // ✅ ProductBloc
   sl.registerFactory<ProductBloc>(() => ProductBloc(
     getAllProductsUseCase: sl(),
     dataSource: sl(),
   ));
 
+  // ✅ CRUD BLoC
   sl.registerFactory<ProductCrudBloc>(() => ProductCrudBloc(remoteDataSource: sl()));
 }

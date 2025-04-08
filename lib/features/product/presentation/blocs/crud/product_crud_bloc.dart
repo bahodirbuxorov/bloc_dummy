@@ -1,6 +1,7 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import '../../../data/datasources/product_remote_data_source.dart';
+import '../../../data/models/product_model.dart';
 
 part 'product_crud_event.dart';
 part 'product_crud_state.dart';
@@ -18,7 +19,7 @@ class ProductCrudBloc extends Bloc<ProductCrudEvent, ProductCrudState> {
     emit(ProductCrudLoading());
     try {
       final product = await remoteDataSource.addProduct(event.data);
-      emit(ProductCrudSuccess("Product added: ${product.title}"));
+      emit(ProductCrudSuccess(product));
     } catch (e) {
       emit(ProductCrudFailure("Failed to add product: ${e.toString()}"));
     }
@@ -28,7 +29,7 @@ class ProductCrudBloc extends Bloc<ProductCrudEvent, ProductCrudState> {
     emit(ProductCrudLoading());
     try {
       final product = await remoteDataSource.updateProduct(event.id, event.data);
-      emit(ProductCrudSuccess("Product updated: ${product.title}"));
+      emit(ProductCrudSuccess(product));
     } catch (e) {
       emit(ProductCrudFailure("Failed to update product: ${e.toString()}"));
     }
@@ -37,9 +38,9 @@ class ProductCrudBloc extends Bloc<ProductCrudEvent, ProductCrudState> {
   Future<void> _onDeleteProduct(DeleteProductEvent event, Emitter<ProductCrudState> emit) async {
     emit(ProductCrudLoading());
     try {
-      final result = await remoteDataSource.deleteProduct(event.id);
-      if (result['isDeleted'] == true) {
-        emit(ProductCrudSuccess("Product deleted successfully"));
+      final product = await remoteDataSource.deleteProduct(event.id);
+      if (product.title.isNotEmpty) {
+        emit(ProductCrudSuccess(product));
       } else {
         emit(ProductCrudFailure("Delete failed"));
       }

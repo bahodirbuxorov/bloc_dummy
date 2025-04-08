@@ -15,7 +15,6 @@ class ProductBloc extends Bloc<ProductEvent, ProductState> {
     required this.getAllProductsUseCase,
     required this.dataSource,
   }) : super(ProductInitial()) {
-    // state cache
     List<ProductEntity> currentProducts = [];
 
     on<LoadProductsEvent>((event, emit) async {
@@ -29,27 +28,24 @@ class ProductBloc extends Bloc<ProductEvent, ProductState> {
       }
     });
 
-
     on<LoadProductsByCategoryEvent>((event, emit) async {
       emit(ProductLoading());
       try {
         final models = await dataSource.getProductsByCategory(event.category);
-        final products = models.map((model) =>
-            ProductEntity(
-              id: model.id,
-              title: model.title,
-              description: model.description,
-              price: model.price,
-              thumbnail: model.thumbnail,
-              category: model.category,
-            )).toList();
+        final products = models.map((model) => ProductEntity(
+          id: model.id,
+          title: model.title,
+          description: model.description,
+          price: model.price,
+          thumbnail: model.thumbnail,
+          category: model.category,
+        )).toList();
         currentProducts = products;
         emit(ProductLoaded(products));
       } catch (e) {
         emit(ProductError("Category load error: ${e.toString()}"));
       }
     });
-
 
     on<SearchProductsEvent>((event, emit) {
       final filtered = currentProducts.where((product) =>
@@ -61,17 +57,13 @@ class ProductBloc extends Bloc<ProductEvent, ProductState> {
     on<SortProductsEvent>((event, emit) {
       final sorted = [...currentProducts];
       if (event.sortBy == "price") {
-        sorted.sort((a, b) =>
-        event.order == "asc"
-            ? a.price.compareTo(b.price)
-            : b.price.compareTo(a.price));
+        sorted.sort((a, b) => event.order == "asc" ? a.price.compareTo(b.price) : b.price.compareTo(a.price));
       } else {
-        sorted.sort((a, b) =>
-        event.order == "asc"
-            ? a.title.compareTo(b.title)
-            : b.title.compareTo(a.title));
+        sorted.sort((a, b) => event.order == "asc" ? a.title.compareTo(b.title) : b.title.compareTo(a.title));
       }
       emit(ProductLoaded(sorted));
     });
   }
-  }
+}
+
+
